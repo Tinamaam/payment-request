@@ -3,13 +3,13 @@
   <head>
     <meta charset='utf-8'>
     <title>
-      Payment Request API 1.1
+      Payment Request API
     </title>
     <script src='https://www.w3.org/Tools/respec/respec-w3c' class=
     'remove'></script>
     <script class='remove'>
     var respecConfig = {
-      shortName: "payment-request-1.1",
+      shortName: "payment-request",
       github: "w3c/payment-request",
       specStatus: "ED",
       group: "payments",
@@ -74,13 +74,13 @@
       },
       doJsonLd: true,
       xref: "web-platform",
-      mdn: "payment-request",
+      mdn: true,
     };
     </script>
   </head>
   <body data-cite="payment-method-id">
     <h1 id="title">
-      Payment Request API 1.1
+      Payment Request API
     </h1>
     <section id='abstract'>
       <p>
@@ -143,13 +143,36 @@
           Changes since last publication
         </h3>
         <p>
-          This version of the specification removes data features from the API,
-          essentially pushing data details to payment method descriptions. The
-          complete list of changes, including all editorial changes, is
-          viewable in the <a href=
-          "https://github.com/w3c/payment-request/commits/gh-pages">commit
-          history</a>. Key set of changes are viewable in the <a href=
-          "#changelog">Changelog</a>.
+          In September 2022 the Web Payments Working Group published a <a href=
+          "https://www.w3.org/TR/2022/REC-payment-request-20220908/">Payment
+          Request Recommendation</a>. Following privacy and
+          internationalization reviews, the Recommendation excluded <a href=
+          "https://lists.w3.org/Archives/Public/public-payments-wg/2021Jun/0000.html">
+          capabilities</a> related to billing and shipping addresses. However,
+          implementations have continued to support those features
+          interoperably, and so the Working Group has decided to try to
+          re-align the specification with implementations, and re-engage the
+          community on associated issues.
+        </p>
+        <p>
+          This document is a Candidate Recommendation Snapshot based on the
+          text of the original Recommendation. A subsequent Candidate
+          Recommendation Draft will add back address capabilities and a small
+          number of other changes made since publication of the Recommendation.
+        </p>
+        <p>
+          In adding back support for addresses, the group plans to refer to the
+          address components defined in the <a href=
+          "https://w3c.github.io/contact-picker/">Contact Picker API</a> rather
+          than define those components itself. Indeed, the Contact Picker API
+          is derived from the original definitions found in Payment Request
+          API, and pulled out of the specification because addresses are useful
+          on the Web beyond payments.
+        </p>
+        <p>
+          The Working Group would engage in discussion and follow the usual
+          review process before advancing the specification to Proposed
+          Recommendation status.
         </p>
       </section>
     </section>
@@ -419,7 +442,7 @@
         <pre class="example js" title="Constructing a `PaymentRequest`">
           async function doPaymentRequest() {
             try {
-              const request = new PaymentRequest(methodData, details, options);
+              const request = new PaymentRequest(methodData, details);
               const response = await request.show();
               await validateResponse(response);
             } catch (err) {
@@ -459,7 +482,7 @@
         </p>
         <pre class="example js" title="POSTing with `fetch()`">
           async function doPaymentRequest() {
-            const payRequest = new PaymentRequest(methodData, details, options);
+            const payRequest = new PaymentRequest(methodData, details);
             const payResponse = await payRequest.show();
             let result = "";
             try {
@@ -823,21 +846,15 @@
           <li data-tests=
           "payment-request-show-method.https.html, show-method-postmessage-manual.https.html">
           If the [=relevant global object=] of [=request=] does not have
-          [=transient activation=], the user agent MAY:
+          [=transient activation=]:
             <ol>
               <li>Return [=a promise rejected with=] with a {{"SecurityError"}}
               {{DOMException}}.
               </li>
             </ol>
-            <p class="note">
-              This allows the user agent to not require user activation, for
-              example to support redirect flows where a user activation may not
-              be present upon redirect. See <a href=
-              "#user-activation-requirement"></a> for security considerations.
-            </p>
           </li>
-          <li data-tests="show-consume-activation.https.html">Otherwise,
-          [=consume user activation=] of the [=relevant global object=].
+          <li data-tests="show-consume-activation.https.html">[=Consume user
+          activation=] of the [=relevant global object=].
           </li>
           <li>Let |document| be |request|'s [=relevant global object=]'s
           [=associated `Document`=].
@@ -3281,32 +3298,6 @@
           with repeated calls, whether it is the cost of managing multiple
           [=host/registrable domains=] or the user experience friction of
           opening multiple windows (tabs or pop-ups).
-        </p>
-      </section>
-      <section>
-        <h2 id="user-activation-requirement">
-          User activation requirement
-        </h2>
-        <p>
-          If the user agent does not require user activation as part of the
-          {{PaymentRequest/show()}} method, some additional security
-          mitigations should be considered. Not requiring user activation
-          increases the risk of spam and click-jacking attacks, by allowing a
-          Payment Request UI to be initiated without the user interacting with
-          the page immediately beforehand.
-        </p>
-        <p>
-          In order to mitigate spam, the user agent may decide to enforce a
-          user activation requirement after some threshold, for example after
-          the user has already been shown a Payment Request UI without a user
-          activation on the current page. In order to mitigate click-jacking
-          attacks, the user agent may implement a time threshold in which
-          clicks are ignored immediately after a dialog is shown.
-        </p>
-        <p>
-          Another relevant mitigation exists in step 6 of
-          {{PaymentRequest/show()}}, where the document must be visible in
-          order to initiate the user interaction.
         </p>
       </section>
     </section>
